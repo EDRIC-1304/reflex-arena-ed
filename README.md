@@ -4,7 +4,7 @@ A frontend-only F1-inspired reflex and typing challenge built with React and Vit
 
 ## Overview
 
-Reflex Arena is a browser-based mini-game project inspired by motorsport race control and high-speed reaction timing. It brings together two focused challenges in a single portfolio-friendly experience: a reaction-speed test and a race-style typing game.
+Reflex Arena is a browser-based mini-game project inspired by motorsport race control and high-speed reaction timing. It brings together two focused challenges: a reaction-speed test and an F1-inspired typing race.
 
 The experience is designed as a dark, minimal, F1-inspired interface with a red motorsport accent palette, quick gameplay loops, and responsive browser-based interactions.
 
@@ -13,7 +13,7 @@ The experience is designed as a dark, minimal, F1-inspired interface with a red 
 - F1-inspired reaction test with start-light sequence
 - False-start detection for early inputs
 - Reaction-time measurement and performance feedback
-- Type to Race mode with lap-based progression
+- Type to Race as an F1-inspired typing race where typing performance controls race progression and an F1 car moves through race sectors and laps.
 - Score, combo, WPM, and accuracy tracking
 - Animated mini F1 track on the home screen
 - Responsive layout for desktop and mobile play
@@ -30,7 +30,7 @@ The Reaction Test challenges the player to wait for the lights and trigger as qu
 
 ### Type to Race
 
-Type to Race turns keyboard input into a race simulation. Players type words as they approach the screen, accumulate score and combo momentum, maintain accuracy, and complete lap-based progression before missing too many words.
+Type to Race is an F1-inspired typing race where typing performance controls race progression and an F1 car moves through race sectors and laps. Players type a large, progressively harder word bank, build combo momentum for DRS-style boosts, maintain accuracy, and complete five laps before missing too many sectors.
 
 ## Tech Stack
 
