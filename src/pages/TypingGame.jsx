@@ -14,6 +14,7 @@ import { useNavigate } from "react-router-dom";
 
 import GameHelp from "../components/ui/GameHelp";
 import useTypingGame from "../hooks/useTypingGame";
+import { getTrackPosition } from "../utils/raceTrack";
 import sound from "../utils/sound";
 import { getSoundEnabledPreference } from "../utils/storage";
 
@@ -41,14 +42,12 @@ function TypingGame() {
     totalLaps,
     raceProgress,
     countdownValue,
+    drsActive,
+    movementDuration,
     startGame,
     resetGame,
     handleInput,
   } = useTypingGame();
-
-  useEffect(() => {
-    setSoundEnabled(sound.isEnabled());
-  }, [phase]);
 
   useEffect(() => {
     if (phase === "playing") {
@@ -182,11 +181,30 @@ function TypingGame() {
         <section className="typing-arena" onClick={handleArenaClick}>
           <div className="typing-grid" />
 
-          <div className="arena-core">
-            <div className="core-ring core-ring-one" />
-            <div className="core-ring core-ring-two" />
-            <Flag size={24} strokeWidth={1} />
-            <span>{Math.round(raceProgress)}% GRID</span>
+          <div className="race-circuit" aria-hidden="true">
+            <div className="circuit-label circuit-label-start">START / FINISH</div>
+            <div className="circuit-label circuit-label-apex">APEX 02</div>
+            <div className="circuit-sector sector-one">01</div>
+            <div className="circuit-sector sector-two">02</div>
+            <div className="circuit-sector sector-three">03</div>
+            <svg viewBox="0 0 100 100" preserveAspectRatio="none">
+              <path className="circuit-outer" d="M16 65 C12 43 23 20 47 14 C72 17 91 31 91 55 C76 72 54 78 39 67 C27 73 16 65 16 65" />
+              <path className="circuit-line" d="M16 65 C12 43 23 20 47 14 C72 17 91 31 91 55 C76 72 54 78 39 67 C27 73 16 65 16 65" />
+              <path className="circuit-dash" d="M16 65 C12 43 23 20 47 14 C72 17 91 31 91 55 C76 72 54 78 39 67 C27 73 16 65 16 65" />
+            </svg>
+            <motion.div
+              className={`race-car ${drsActive ? "race-car-drs" : ""}`}
+              animate={(() => {
+                const position = getTrackPosition(raceProgress);
+                return { left: `${position.x}%`, top: `${position.y}%` };
+              })()}
+              transition={{ duration: movementDuration, ease: "easeInOut" }}
+            >
+              <span className="race-car-wing" />
+              <span className="race-car-body" />
+              <span className="race-car-wheel race-car-wheel-front" />
+              <span className="race-car-wheel race-car-wheel-back" />
+            </motion.div>
           </div>
 
           <AnimatePresence>
@@ -196,22 +214,18 @@ function TypingGame() {
               return (
                 <motion.div
                   key={word.id}
-                  className={`typing-target ${isTyping ? "target-active" : ""}`}
-                  style={{
-                    left: `${word.x}%`,
-                    top: `${word.y}%`,
-                  }}
-                  initial={{ opacity: 0, scale: 0.5 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 1.8 }}
+                  className={`sector-card ${isTyping ? "target-active" : ""}`}
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -12 }}
                   transition={{ duration: 0.15 }}
                 >
-                  <span className="target-marker target-marker-top" />
-                  <span className="target-marker target-marker-right" />
-                  <span className="target-marker target-marker-bottom" />
-                  <span className="target-marker target-marker-left" />
+                  <div className="sector-card-meta">
+                    <span>SECTOR {word.sector.toString().padStart(2, "0")}</span>
+                    <span>PACE {word.difficulty}</span>
+                  </div>
 
-                  <div className="target-word">
+                  <div className="sector-word">
                     {isTyping ? (
                       <>
                         <span className="typed-part">{word.text.slice(0, typedText.length)}</span>
@@ -222,11 +236,16 @@ function TypingGame() {
                     )}
                   </div>
 
-                  <div className="target-distance">SECTOR // {Math.round(word.progress)}</div>
+                  <div className="sector-card-hint">COMPLETE SECTOR TO ADVANCE</div>
                 </motion.div>
               );
             })}
           </AnimatePresence>
+
+          <div className="race-progress-readout">
+            <span>{Math.round(raceProgress).toString().padStart(2, "0")}% TRACK DISTANCE</span>
+            <span>{drsActive ? "DRS OPEN // BOOST ACTIVE" : "RACE PACE // HOLD THE LINE"}</span>
+          </div>
 
           {(phase === "idle" || phase === "ready" || phase === "countdown") && (
             <motion.div
