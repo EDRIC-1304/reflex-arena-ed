@@ -38,7 +38,7 @@ function MiniTrack() {
           LIVE
         </span>
 
-        <span>20 CARS</span>
+        <span>LIVE GRID</span>
       </div>
 
       <svg
