@@ -15,10 +15,6 @@ function Home() {
           <span>ARENA</span>
         </h1>
 
-        <p className="hero-description">
-          Test your reaction. Sharpen your focus. Type at race pace.
-        </p>
-
         <div className="game-grid">
           <button
             type="button"
@@ -66,10 +62,6 @@ function Home() {
         </div>
       </div>
 
-      <div className="home-footer">
-        <span>FRONTEND ONLY</span>
-        <span>NO ACCOUNT REQUIRED</span>
-      </div>
     </main>
   );
 }
