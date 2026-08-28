@@ -341,9 +341,8 @@ function TypingGame() {
                   <g
                     key="active-f1-car"
                     className={`typing-svg-car ${drsActive ? "drs" : ""}`}
+                    transform={`translate(${pos.x}, ${pos.y}) rotate(${pos.angle})`}
                     style={{
-                      transform: `translate(${pos.x}px, ${pos.y}px) rotate(${pos.angle}deg)`,
-                      transformOrigin: `${pos.x}px ${pos.y}px`,
                       transition: `transform ${movementDuration}s ease-in-out`,
                     }}
                   >
