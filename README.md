@@ -1,154 +1,104 @@
-# Reflex Arena
+# F1 Reflex Arena
 
-A frontend-only F1-inspired reflex and typing challenge built with React and Vite.
+A frontend-only, F1-inspired reaction and typing challenge suite built with React and Vite. Designed with a dark motorsport race-control aesthetic, real-time performance telemetry, responsive layouts, and Web Audio feedback.
 
-## Overview
+**Live Demo:** [https://reflex-arena-ed13.netlify.app](https://reflex-arena-ed13.netlify.app)
 
-Reflex Arena is a browser-based mini-game project inspired by motorsport race control and high-speed reaction timing. It brings together two focused challenges: a reaction-speed test and an F1-inspired typing race.
+---
 
-The experience is designed as a dark, minimal, F1-inspired interface with a red motorsport accent palette, quick gameplay loops, and responsive browser-based interactions.
+## Project Overview
 
-## Features
+**F1 Reflex Arena** brings motorsport race control directly to the browser with two core gameplay challenges:
+1. **Reaction Test** — A start-light reaction test measuring response times down to the millisecond.
+2. **Type to Race** — A high-speed typing challenge where typing precision controls an animated F1 car along a racing circuit.
 
-- F1-inspired reaction test with start-light sequence
-- False-start detection for early inputs
-- Reaction-time measurement and performance feedback
-- Type to Race as an F1-inspired typing race where typing performance controls race progression and an F1 car moves through race sectors and laps.
-- Score, combo, WPM, and accuracy tracking
-- Animated mini F1 track on the home screen
-- Responsive layout for desktop and mobile play
-- Browser local persistence for reaction and typing best records
-- Sound toggling and inline game feedback
-- Help panels for both game modes
-- Frontend-only architecture with no backend dependency
+The project features a sleek dark-mode UI with red motorsport accents, real-time speed/accuracy metrics, SVG curve animations, and persistent local score tracking.
 
-## Games
+---
+
+## Main Features
+
+- **F1 Reaction Test:** Motorsport start-light sequence (5 red lights) with randomized green light delays, false-start detection, and millisecond timing ratings.
+- **Type to Race Mode:** Typing speed and accuracy drive race progression through 5 laps and 4 sectors per lap (20 target words total).
+- **Animated F1 Mini-Track:** Interactive SVG Bezier curved track populated with 20 animated AI race cars on the home dashboard and live race view.
+- **Dynamic Race Car Progression:** Active F1 car rendered on the circuit with real-time position and rotation calculated via cubic Bezier curve math as typing progress advances.
+- **Typing Difficulty & Word System:** 5 progressive difficulty levels scaling from basic racing terms to complex motorsport and focus vocabulary.
+- **DRS Boost & Combo System:** Combo multiplier system that unlocks DRS (Drag Reduction System) speed boost visuals upon hitting a 5-word typing streak.
+- **Timer Modes:** Configurable race timer settings (**No Time Limit**, **30s**, **60s**, **90s**, and **120s**).
+- **Miss Counter & DNF System:** Optional miss counter tracking up to 5 mistyped words, triggering a DNF (Did Not Finish) if exceeded or if the timer expires.
+- **Web Audio Synthesizer:** Custom audio feedback generated using the native browser Web Audio API for light signals, start beeps, DRS boosts, and lap completions, with toggleable mute settings.
+- **Responsive Mobile & Desktop Layout:** Optimized for desktop keyboard play and mobile touch controls, featuring a dedicated status bar layout for small screens.
+- **Browser Local Persistence:** Saves personal best reaction times (ms), top WPM, highest score, peak accuracy, and best combo streak using `localStorage`.
+
+---
+
+## Game Modes
 
 ### Reaction Test
-
-The Reaction Test challenges the player to wait for the lights and trigger as quickly as possible when the signal turns green. The game tracks reaction speed, rewards faster responses, and flags false starts when the player acts too early.
+Challenge your reaction speed against an F1 start-light gantry.
+- Wait for 5 red lights to illuminate sequentially.
+- When the lights go out, trigger your response immediately (mouse, touch, or Space/Enter keys).
+- Premature inputs trigger a **False Start** warning.
+- Displays reaction time in milliseconds along with performance ratings ranging from **SUPERSONIC** (<150ms) to **NEEDS WORK** (≥400ms).
 
 ### Type to Race
+Drive an F1 car around the circuit by typing target words accurately and quickly.
+- Complete 5 laps across 4 sectors per lap to finish the session.
+- Maintain high accuracy and speed to build combos and activate **DRS**.
+- Customize your session with configurable **Timer Modes** and an optional **Miss Counter** (5 max misses before DNF).
 
-Type to Race is an F1-inspired typing race where typing performance controls race progression and an F1 car moves through race sectors and laps. Players type a large, progressively harder word bank, build combo momentum for DRS-style boosts, maintain accuracy, and complete five laps before missing too many sectors.
+---
 
-## Tech Stack
+## Technologies Used
 
-- React
-- Vite
-- JavaScript
-- React Router
-- Framer Motion
-- Lucide React
+- **React 19** — Component-driven UI architecture and custom hooks
+- **Vite** — Fast frontend build tool and dev server
+- **React Router DOM v7** — Client-side page navigation
+- **Framer Motion** — UI transitions and modal animations
+- **Lucide React** — Clean motorsport-style icons
+- **Web Audio API** — Synthesized audio effects without external sound files
+- **CSS3 / SVG** — Dark theme custom properties and Bezier path math for track rendering
 
-## Project Architecture
+---
 
-```text
-src/
-├── components/
-│   ├── layout/
-│   └── ui/
-├── hooks/
-├── pages/
-├── utils/
-├── App.jsx
-├── main.jsx
-├── index.css
-├── assets/
-public/
-├── favicon.svg
-├── icons.svg
-index.html
-package.json
-package-lock.json
-vite.config.js
-```
-
-The app is organized around page components, custom game hooks, supporting utility modules, and a small shared UI layer for the help overlay and track visuals.
-
-## Getting Started
+## Local Development
 
 ### Prerequisites
+- [Node.js](https://nodejs.org/) (v18+ recommended)
 
-- Node.js
+### Installation & Setup
 
-### Installation
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/EDRIC-1304/reflex-arena-ed.git
+   cd reflex-arena-ed
+   ```
 
-```bash
-git clone https://github.com/EDRIC-1304/reflex-arena-ed.git
-cd reflex-arena-ed
-npm install
-```
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
 
-### Development
+3. **Start the development server:**
+   ```bash
+   npm run dev
+   ```
 
-```bash
-npm run dev
-```
+4. **Build for production:**
+   ```bash
+   npm run build
+   ```
 
-Then open the local Vite server in your browser. The dev server URL is typically printed in the terminal by Vite.
+5. **Preview the production build:**
+   ```bash
+   npm run preview
+   ```
 
-## Build
+---
 
-```bash
-npm run build
-```
+## Author & Repository
 
-This creates a production build in the `dist/` folder.
-
-### Preview
-
-```bash
-npm run preview
-```
-
-## Deployment
-
-This project is a frontend-only React + Vite application and is suitable for deployment on services such as:
-
-- Vercel
-- Netlify
-- GitHub Pages
-
-Live deployment is not configured in this repository yet.
-
-## Design Philosophy
-
-Reflex Arena follows a focused motorsport aesthetic: dark surfaces, minimal interface layout, red functional accents, and a race-control style for the user experience. The design is intentionally clean so the gameplay remains the center of attention while still feeling polished and portfolio-ready.
-
-## Project Goals
-
-This project demonstrates:
-
-- React component-based UI composition
-- client-side game logic and state flow
-- responsive frontend design
-- animation-driven UI polish
-- browser storage for persistent stats
-- interactive game UX with keyboard and pointer input
-
-## Future Improvements
-
-Potential future enhancements include:
-
-- online leaderboards
-- multiplayer or competitive racing modes
-- richer telemetry and race analytics
-- additional game challenge variants
-- expanded local persistence and profile tracking
-
-These are future ideas only and are not currently implemented.
-
-## License
-
-License has not been specified yet.
-
-## Author
-
-- EDRIC-1304
-- GitHub: https://github.com/EDRIC-1304
-
-## Repository
-
-- GitHub: https://github.com/EDRIC-1304/reflex-arena-ed
-- Live demo: coming soon
+- **Author:** EDRIC-1304
+- **GitHub:** [https://github.com/EDRIC-1304](https://github.com/EDRIC-1304)
+- **Repository:** [https://github.com/EDRIC-1304/reflex-arena-ed](https://github.com/EDRIC-1304/reflex-arena-ed)
+- **Live Demo:** [https://reflex-arena-ed13.netlify.app](https://reflex-arena-ed13.netlify.app)
