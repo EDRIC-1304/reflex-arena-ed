@@ -18,12 +18,14 @@ import { getTrackPosition } from "../utils/raceTrack";
 import sound from "../utils/sound";
 import { getSoundEnabledPreference } from "../utils/storage";
 
+const TIME_LIMIT_OPTIONS = [0, 30, 60, 90, 120];
+
 function TypingGame() {
   const navigate = useNavigate();
   const inputRef = useRef(null);
   const [soundEnabled, setSoundEnabled] = useState(getSoundEnabledPreference());
   const [helpOpen, setHelpOpen] = useState(false);
-  const [isComposing, setIsComposing] = useState(false);
+  const [selectedTimeLimit, setSelectedTimeLimit] = useState(0);
 
   const {
     phase,
@@ -48,6 +50,9 @@ function TypingGame() {
     startGame,
     resetGame,
     handleInput,
+    timeLimit,
+    remainingTime,
+    didNotFinish,
   } = useTypingGame();
 
   useEffect(() => {
@@ -166,6 +171,13 @@ function TypingGame() {
             <strong>{accuracy}%</strong>
           </div>
 
+          {timeLimit > 0 && (
+            <div className={`typing-hud-stat typing-time-stat ${remainingTime <= 10 ? "warning" : ""}`}>
+              <span>TIME LEFT</span>
+              <strong>{remainingTime}s</strong>
+            </div>
+          )}
+
           <div className="typing-lives">
             <span>MISSES</span>
             <div className="life-indicators">
@@ -199,6 +211,25 @@ function TypingGame() {
                     ? "Lights armed. Hold steady."
                     : "Countdown active. Typing is disabled until GO."}
               </p>
+
+              {phase === "idle" && (
+                <div className="time-limit-picker" role="group" aria-label="Race time limit">
+                  <span className="time-limit-label">TIME MODE</span>
+                  <div className="time-limit-options">
+                    {TIME_LIMIT_OPTIONS.map((option) => (
+                      <button
+                        key={option}
+                        type="button"
+                        className={selectedTimeLimit === option ? "time-limit-option active" : "time-limit-option"}
+                        onClick={() => setSelectedTimeLimit(option)}
+                        aria-pressed={selectedTimeLimit === option}
+                      >
+                        {option === 0 ? "NO TIME LIMIT" : `${option} SECONDS`}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
 
             {phase === "idle" && (
@@ -207,7 +238,7 @@ function TypingGame() {
                 className="reaction-button"
                 onClick={(event) => {
                   event.stopPropagation();
-                  startGame();
+                  startGame(selectedTimeLimit);
                 }}
                 aria-label="Start type to race session"
               >
@@ -236,7 +267,7 @@ function TypingGame() {
             <div className="circuit-sector sector-one">01</div>
             <div className="circuit-sector sector-two">02</div>
             <div className="circuit-sector sector-three">03</div>
-            <svg viewBox="0 0 100 100" preserveAspectRatio="none">
+            <svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
               <path className="circuit-outer" d="M16 65 C12 43 23 20 47 14 C72 17 91 31 91 55 C76 72 54 78 39 67 C27 73 16 65 16 65" />
               <path className="circuit-line" d="M16 65 C12 43 23 20 47 14 C72 17 91 31 91 55 C76 72 54 78 39 67 C27 73 16 65 16 65" />
               <path className="circuit-dash" d="M16 65 C12 43 23 20 47 14 C72 17 91 31 91 55 C76 72 54 78 39 67 C27 73 16 65 16 65" />
@@ -302,9 +333,11 @@ function TypingGame() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
             >
-              <span className="typing-result-label">SESSION COMPLETE</span>
+              <span className={`typing-result-label ${didNotFinish ? "dnf-label" : ""}`}>
+                {didNotFinish ? "DNF - DID NOT FINISH" : "SESSION COMPLETE"}
+              </span>
 
-              <h1>{score > 0 ? "RACE COMPLETE" : "RACE OVER"}</h1>
+              <h1>{didNotFinish ? "DNF - DID NOT FINISH" : score > 0 ? "RACE COMPLETE" : "RACE OVER"}</h1>
 
               <div className="typing-result-grid">
                 <div>
@@ -335,6 +368,11 @@ function TypingGame() {
                 <div>
                   <span>TIME</span>
                   <strong>{sessionTime}s</strong>
+                </div>
+
+                <div>
+                  <span>TIME LIMIT</span>
+                  <strong>{timeLimit > 0 ? `${timeLimit}s` : "NONE"}</strong>
                 </div>
 
                 <div>
@@ -392,14 +430,7 @@ function TypingGame() {
               <input
                 ref={inputRef}
                 value={typedText}
-                onChange={(event) => {
-                  if (!isComposing) handleInput(event.target.value);
-                }}
-                onCompositionStart={() => setIsComposing(true)}
-                onCompositionEnd={(event) => {
-                  setIsComposing(false);
-                  handleInput(event.currentTarget.value);
-                }}
+                onInput={(event) => handleInput(event.currentTarget.value)}
                 className="typing-input"
                 autoComplete="off"
                 autoCorrect="off"

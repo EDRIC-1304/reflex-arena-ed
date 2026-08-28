@@ -97,6 +97,9 @@ function useTypingGame() {
   const [countdownValue, setCountdownValue] = useState(0);
   const [drsActive, setDrsActive] = useState(false);
   const [movementDuration, setMovementDuration] = useState(0.9);
+  const [timeLimit, setTimeLimit] = useState(0);
+  const [remainingTime, setRemainingTime] = useState(null);
+  const [didNotFinish, setDidNotFinish] = useState(false);
 
   const typedRef = useRef("");
   const phaseRef = useRef("idle");
@@ -113,11 +116,17 @@ function useTypingGame() {
   const recentWordsRef = useRef([]);
   const countdownTimersRef = useRef([]);
   const drsTimerRef = useRef(null);
+  const raceTimerRef = useRef(null);
+  const raceClockRef = useRef(null);
 
   const clearTimers = useCallback(() => {
     countdownTimersRef.current.forEach((timer) => clearTimeout(timer));
     countdownTimersRef.current = [];
     if (drsTimerRef.current) clearTimeout(drsTimerRef.current);
+    if (raceTimerRef.current) clearTimeout(raceTimerRef.current);
+    if (raceClockRef.current) clearInterval(raceClockRef.current);
+    raceTimerRef.current = null;
+    raceClockRef.current = null;
   }, []);
 
   const updateHud = useCallback(() => {
@@ -128,7 +137,7 @@ function useTypingGame() {
     setSessionTime(Math.round(elapsed / 1000));
   }, []);
 
-  const finishRace = useCallback(() => {
+  const finishRace = useCallback((timedOut = false) => {
     if (phaseRef.current === "result") return;
     clearTimers();
     const elapsed = startTimeRef.current ? Math.max(1, performance.now() - startTimeRef.current) : 0;
@@ -145,6 +154,8 @@ function useTypingGame() {
     };
     setTypingBestScores(nextBest);
     setBestScore(nextBest.bestScore);
+    setDidNotFinish(timedOut);
+    if (timedOut) setRemainingTime(0);
     phaseRef.current = "result";
     setPhase("result");
     sound.playRaceFinish();
@@ -173,6 +184,9 @@ function useTypingGame() {
     setRaceProgress(0);
     setCountdownValue(0);
     setDrsActive(false);
+    setTimeLimit(0);
+    setRemainingTime(null);
+    setDidNotFinish(false);
     scoreRef.current = 0;
     missedWordsRef.current = 0;
     comboRef.current = 0;
@@ -192,8 +206,9 @@ function useTypingGame() {
     setLevel(difficulty);
   }, []);
 
-  const startGame = useCallback(() => {
+  const startGame = useCallback((selectedTimeLimit = 0) => {
     resetGame();
+    setTimeLimit(selectedTimeLimit);
     phaseRef.current = "ready";
     setPhase("ready");
     setCountdownValue(5);
@@ -210,11 +225,23 @@ function useTypingGame() {
       setPhase("playing");
       setCountdownValue(0);
       startTimeRef.current = performance.now();
+      if (selectedTimeLimit > 0) {
+        const raceStartedAt = performance.now();
+        setRemainingTime(selectedTimeLimit);
+        raceClockRef.current = setInterval(() => {
+          const elapsed = performance.now() - raceStartedAt;
+          setRemainingTime(Math.max(0, selectedTimeLimit - Math.ceil(elapsed / 1000)));
+        }, 250);
+        raceTimerRef.current = setTimeout(() => finishRace(true), selectedTimeLimit * 1000);
+      } else {
+        setRemainingTime(null);
+      }
       setNextWord();
       sound.playGo();
     }, 280 + countdownSteps.length * 260 + 220);
     countdownTimersRef.current.push(goTimer);
-  }, [resetGame, setNextWord]);
+    setDidNotFinish(false);
+  }, [finishRace, resetGame, setNextWord]);
 
   const completeWord = useCallback(() => {
     const word = activeWordRef.current;
@@ -295,7 +322,7 @@ function useTypingGame() {
     phase, words, typedText, score, missedWords, level, combo, maxCombo,
     completedWords, accuracy, wpm, bestScore, sessionTime, lap, totalLaps,
     raceProgress, countdownValue, drsActive, movementDuration, startGame,
-    resetGame, handleInput,
+    resetGame, handleInput, timeLimit, remainingTime, didNotFinish,
   };
 }
 
