@@ -56,6 +56,7 @@ function TypingGame() {
     raceProgress,
     countdownValue,
     drsActive,
+    movementDuration,
     startGame,
     resetGame,
     handleInput,

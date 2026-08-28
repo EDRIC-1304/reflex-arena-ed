@@ -2646,20 +2646,21 @@ button:focus-visible {
   .typing-mobile-race-status {
     display: block;
     position: absolute;
-    top: 260px;
+    top: 270px;
     left: 10px;
     right: 10px;
-    min-height: 52px;
+    min-height: 44px;
     z-index: 9;
-    background: rgba(8, 9, 9, 0.9);
-    border-top: 1px solid #202222;
+    background: rgba(8, 9, 9, 0.94);
+    border: 1px solid #202222;
+    border-radius: 4px;
   }
 
   .typing-mobile-race-status .typing-race-status {
     display: flex;
     align-items: stretch;
     width: 100%;
-    min-height: 52px;
+    min-height: 44px;
     margin-left: 0;
   }
 
@@ -2828,7 +2829,7 @@ button:focus-visible {
   .sector-card {
     width: calc(100% - 24px);
     max-width: calc(100% - 24px);
-    margin-top: 292px;
+    margin-top: 320px;
     padding: 15px 14px 13px;
   }
 
@@ -2840,7 +2841,7 @@ button:focus-visible {
   .race-progress-readout {
     left: 10px;
     right: 10px;
-    top: 268px;
+    top: 252px;
     gap: 8px;
     font-size: 6px;
     line-height: 1.5;
@@ -2886,4 +2887,230 @@ button:focus-visible {
   .sector-card-hint {
     font-size: 6px;
   }
+}
+
+/* =========================================================
+   TRACK DOTS GLOW
+========================================================= */
+
+.typing-track-leader {
+  filter: drop-shadow(0 0 5px rgba(255, 59, 48, 1)) drop-shadow(0 0 10px rgba(255, 59, 48, 0.6));
+}
+
+.typing-track-car {
+  filter: drop-shadow(0 0 3px rgba(245, 245, 245, 0.9));
+}
+
+/* =========================================================
+   F1 LOADER COMPONENT
+========================================================= */
+
+.f1-loader-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background:
+    radial-gradient(circle at 50% 45%, rgba(255, 59, 48, 0.08), transparent 45%),
+    linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+    #070808;
+  background-size: auto, 40px 40px, 40px 40px, auto;
+}
+
+.f1-loader-overlay.inline {
+  position: relative;
+  width: 100%;
+  min-height: 240px;
+}
+
+.f1-loader-card {
+  width: min(440px, calc(100vw - 32px));
+  padding: 24px 28px 22px;
+  background: #0d0f0f;
+  border: 1px solid #282a2a;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6), 0 0 30px rgba(255, 59, 48, 0.08);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.f1-loader-topbar {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  font-size: 8px;
+  letter-spacing: 0.14em;
+}
+
+.f1-loader-badge {
+  color: var(--red);
+  font-weight: 600;
+}
+
+.f1-loader-state {
+  color: #606565;
+  transition: color 150ms ease;
+}
+
+.f1-loader-state.go-state {
+  color: #30d158;
+  font-weight: 700;
+}
+
+.f1-loader-gantry {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  background: #080909;
+  border: 1px solid #222525;
+  border-radius: 4px;
+  transition: box-shadow 200ms ease;
+}
+
+.f1-loader-gantry.lights-out-flash {
+  box-shadow: 0 0 25px rgba(48, 209, 88, 0.35);
+  border-color: rgba(48, 209, 88, 0.5);
+}
+
+.f1-loader-light {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #141616;
+  border: 2px solid #2a2d2d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 120ms ease, border-color 120ms ease, box-shadow 120ms ease;
+}
+
+.f1-loader-light-core {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #252828;
+  transition: background 120ms ease;
+}
+
+.f1-loader-light.active {
+  background: #ff1f1f;
+  border-color: #ff4747;
+  box-shadow: 0 0 12px rgba(255, 32, 32, 0.95), 0 0 24px rgba(255, 32, 32, 0.4);
+}
+
+.f1-loader-light.active .f1-loader-light-core {
+  background: #fff;
+}
+
+.f1-loader-light.go {
+  background: #30d158;
+  border-color: #5ef084;
+  box-shadow: 0 0 14px rgba(48, 209, 88, 0.95), 0 0 28px rgba(48, 209, 88, 0.45);
+}
+
+.f1-loader-light.go .f1-loader-light-core {
+  background: #fff;
+}
+
+.f1-loader-track {
+  position: relative;
+  width: 100%;
+  height: 18px;
+  margin: 22px 0 18px;
+  overflow: hidden;
+}
+
+.f1-loader-track-line {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #2f3333 20%, #2f3333 80%, transparent);
+}
+
+.f1-loader-car {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  animation: loader-car-cruise 2.4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.f1-loader-car.launch {
+  animation: loader-car-launch 0.5s ease-out forwards;
+}
+
+.f1-loader-car-body {
+  width: 18px;
+  height: 8px;
+  background: var(--red);
+  clip-path: polygon(0 50%, 25% 15%, 80% 15%, 100% 50%, 80% 85%, 25% 85%);
+  box-shadow: 0 0 8px rgba(255, 59, 48, 0.8);
+}
+
+.f1-loader-car-wing {
+  width: 4px;
+  height: 5px;
+  background: #fff;
+}
+
+.f1-loader-car-glow {
+  width: 30px;
+  height: 2px;
+  margin-left: -5px;
+  background: linear-gradient(90deg, rgba(255, 59, 48, 0.6), transparent);
+}
+
+@keyframes loader-car-cruise {
+  0% { left: -10%; }
+  100% { left: 105%; }
+}
+
+@keyframes loader-car-launch {
+  0% { left: 40%; transform: translateY(-50%) scale(1); }
+  100% { left: 110%; transform: translateY(-50%) scale(1.15); }
+}
+
+.f1-loader-details {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.f1-loader-title {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: #f2f2f2;
+}
+
+.f1-loader-pulse-dots .dot {
+  opacity: 0.3;
+  animation: dot-pulse 1.2s infinite;
+}
+
+.f1-loader-pulse-dots .dot-1 { animation-delay: 0s; }
+.f1-loader-pulse-dots .dot-2 { animation-delay: 0.3s; }
+.f1-loader-pulse-dots .dot-3 { animation-delay: 0.6s; }
+
+@keyframes dot-pulse {
+  0%, 100% { opacity: 0.2; }
+  50% { opacity: 1; }
+}
+
+.f1-loader-subtext {
+  font-size: 8px;
+  letter-spacing: 0.12em;
+  color: #555c5a;
 }
