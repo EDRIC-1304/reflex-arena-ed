@@ -1606,7 +1606,7 @@ button:focus-visible {
 
 .typing-hud-stat span,
 .typing-lives > span {
-  font-size: 6px;
+  font-size: 8px;
 
   letter-spacing: 0.1em;
 
@@ -1614,7 +1614,7 @@ button:focus-visible {
 }
 
 .typing-hud-stat strong {
-  font-size: 11px;
+  font-size: 14px;
 
   font-weight: 500;
 
@@ -1669,7 +1669,7 @@ button:focus-visible {
 
   flex: 1;
 
-  min-height: 0;
+  min-height: 190px;
 
   overflow: hidden;
 
@@ -1993,7 +1993,7 @@ button:focus-visible {
 .race-progress-readout {
   position: absolute;
   z-index: 4;
-  font-size: 6px;
+  font-size: 8px;
   letter-spacing: 0.12em;
   color: #6d7472;
 }
@@ -2107,13 +2107,13 @@ button:focus-visible {
   display: flex;
   justify-content: space-between;
   margin-bottom: 13px;
-  font-size: 7px;
+  font-size: 9px;
   letter-spacing: 0.14em;
   color: var(--red);
 }
 
 .sector-word {
-  font-size: clamp(22px, 4vw, 38px);
+  font-size: clamp(28px, 4vw, 42px);
   line-height: 1;
   letter-spacing: 0.02em;
   color: #f2f4f3;
@@ -2121,7 +2121,7 @@ button:focus-visible {
 
 .sector-card-hint {
   margin-top: 14px;
-  font-size: 6px;
+  font-size: 8px;
   letter-spacing: 0.12em;
   color: #606866;
 }
@@ -2131,27 +2131,34 @@ button:focus-visible {
 ========================================================= */
 
 .typing-start-screen {
-  position: absolute;
+  position: relative;
 
-  z-index: 10;
+  z-index: 2;
 
-  inset: 0;
+  flex: 0 0 auto;
+
+  min-height: 178px;
 
   display: flex;
-
-  flex-direction: column;
 
   align-items: center;
   justify-content: center;
 
+  gap: 18px;
+
+  padding: 18px 24px;
+
   text-align: center;
 
   background:
-    radial-gradient(
-      circle at center,
-      rgba(8, 9, 9, 0.5),
-      rgba(8, 9, 9, 0.94)
-    );
+    linear-gradient(90deg, rgba(255, 59, 48, 0.035), transparent 45%, rgba(255, 59, 48, 0.025)),
+    #0a0c0c;
+
+  border-bottom: 1px solid #252929;
+}
+
+.typing-start-copy {
+  min-width: 0;
 }
 
 .typing-start-icon {
@@ -2163,7 +2170,7 @@ button:focus-visible {
   width: 60px;
   height: 60px;
 
-  margin-bottom: 20px;
+  flex: 0 0 auto;
 
   color: #626767;
 
@@ -2179,22 +2186,14 @@ button:focus-visible {
 }
 
 .typing-start-screen h1 {
-  margin:
-    10px
-    0
-    8px;
+  margin: 8px 0 7px;
 
   font-family:
     Arial,
     Helvetica,
     sans-serif;
 
-  font-size:
-    clamp(
-      34px,
-      5vw,
-      64px
-    );
+  font-size: clamp(30px, 4vw, 52px);
 
   line-height: 0.9;
 
@@ -2204,12 +2203,11 @@ button:focus-visible {
 }
 
 .typing-start-screen p {
-  margin:
-    0
-    0
-    28px;
+  margin: 0;
 
-  font-size: 9px;
+  font-size: 11px;
+
+  line-height: 1.5;
 
   color: #626767;
 }
@@ -2504,11 +2502,11 @@ button:focus-visible {
 
   .typing-hud-stat span,
   .typing-lives > span {
-    font-size: 5px;
+    font-size: 7px;
   }
 
   .typing-hud-stat strong {
-    font-size: 9px;
+    font-size: 12px;
   }
 
   .typing-lives {
@@ -2565,24 +2563,30 @@ button:focus-visible {
   }
 
   .typing-start-screen {
-    padding: 20px;
+    min-height: 214px;
+
+    flex-direction: column;
+
+    gap: 10px;
+
+    padding: 16px 18px;
   }
 
   .typing-start-icon {
     width: 50px;
     height: 50px;
 
-    margin-bottom: 15px;
+    margin-bottom: 2px;
   }
 
   .typing-start-screen h1 {
-    font-size: 32px;
+    font-size: clamp(29px, 9vw, 38px);
   }
 
   .typing-start-screen p {
     max-width: 260px;
 
-    font-size: 7px;
+    font-size: 10px;
 
     line-height: 1.7;
   }
@@ -2637,7 +2641,7 @@ button:focus-visible {
   }
 
   .sector-word {
-    font-size: clamp(20px, 7vw, 31px);
+    font-size: clamp(26px, 8vw, 36px);
   }
 
   .race-progress-readout {

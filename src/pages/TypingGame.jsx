@@ -23,6 +23,7 @@ function TypingGame() {
   const inputRef = useRef(null);
   const [soundEnabled, setSoundEnabled] = useState(getSoundEnabledPreference());
   const [helpOpen, setHelpOpen] = useState(false);
+  const [isComposing, setIsComposing] = useState(false);
 
   const {
     phase,
@@ -178,6 +179,54 @@ function TypingGame() {
           </div>
         </div>
 
+        {(phase === "idle" || phase === "ready" || phase === "countdown") && (
+          <motion.div
+            className="typing-start-screen"
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            <div className="typing-start-icon">
+              <Flag size={30} strokeWidth={1} />
+            </div>
+
+            <div className="typing-start-copy">
+              <span className="typing-start-label">RACE CONTROL</span>
+              <h1>{phase === "idle" ? "TYPE TO RACE" : phase === "ready" ? "READY" : `STARTING ${countdownValue || 5}`}</h1>
+              <p>
+                {phase === "idle"
+                  ? "Keep your inputs sharp, hold the line, and beat the clock."
+                  : phase === "ready"
+                    ? "Lights armed. Hold steady."
+                    : "Countdown active. Typing is disabled until GO."}
+              </p>
+            </div>
+
+            {phase === "idle" && (
+              <button
+                type="button"
+                className="reaction-button"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  startGame();
+                }}
+                aria-label="Start type to race session"
+              >
+                <Zap size={18} />
+                START SESSION
+              </button>
+            )}
+
+            {phase !== "idle" && (
+              <div className="countdown-lights" aria-live="polite">
+                {Array.from({ length: 5 }, (_, index) => {
+                  const shouldLight = index < countdownValue;
+                  return <span key={index} className={`countdown-light ${shouldLight ? "active" : ""}`} />;
+                })}
+              </div>
+            )}
+          </motion.div>
+        )}
+
         <section className="typing-arena" onClick={handleArenaClick}>
           <div className="typing-grid" />
 
@@ -246,54 +295,6 @@ function TypingGame() {
             <span>{Math.round(raceProgress).toString().padStart(2, "0")}% TRACK DISTANCE</span>
             <span>{drsActive ? "DRS OPEN // BOOST ACTIVE" : "RACE PACE // HOLD THE LINE"}</span>
           </div>
-
-          {(phase === "idle" || phase === "ready" || phase === "countdown") && (
-            <motion.div
-              className="typing-start-screen"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-            >
-              <div className="typing-start-icon">
-                <Flag size={30} strokeWidth={1} />
-              </div>
-
-              <span className="typing-start-label">RACE CONTROL</span>
-
-              <h1>{phase === "idle" ? "TYPE TO RACE" : phase === "ready" ? "READY" : `STARTING ${countdownValue || 5}`}</h1>
-
-              <p>
-                {phase === "idle"
-                  ? "Keep your inputs sharp, hold the line, and beat the clock."
-                  : phase === "ready"
-                    ? "Lights armed. Hold steady."
-                    : "Countdown active. Typing is disabled until GO."}
-              </p>
-
-              {phase === "idle" && (
-                <button
-                  type="button"
-                  className="reaction-button"
-                  onClick={(event) => {
-                    event.stopPropagation();
-                    startGame();
-                  }}
-                  aria-label="Start type to race session"
-                >
-                  <Zap size={18} />
-                  START SESSION
-                </button>
-              )}
-
-              {phase !== "idle" && (
-                <div className="countdown-lights" aria-live="polite">
-                  {Array.from({ length: 5 }, (_, index) => {
-                    const shouldLight = index < countdownValue;
-                    return <span key={index} className={`countdown-light ${shouldLight ? "active" : ""}`} />;
-                  })}
-                </div>
-              )}
-            </motion.div>
-          )}
 
           {phase === "result" && (
             <motion.div
@@ -391,7 +392,14 @@ function TypingGame() {
               <input
                 ref={inputRef}
                 value={typedText}
-                onChange={(event) => handleInput(event.target.value)}
+                onChange={(event) => {
+                  if (!isComposing) handleInput(event.target.value);
+                }}
+                onCompositionStart={() => setIsComposing(true)}
+                onCompositionEnd={(event) => {
+                  setIsComposing(false);
+                  handleInput(event.currentTarget.value);
+                }}
                 className="typing-input"
                 autoComplete="off"
                 autoCorrect="off"
