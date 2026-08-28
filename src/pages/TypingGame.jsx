@@ -341,29 +341,31 @@ function TypingGame() {
                   <g
                     key="active-f1-car"
                     className={`typing-svg-car ${drsActive ? "drs" : ""}`}
-                    transform={`translate(${pos.x}, ${pos.y}) rotate(${pos.angle})`}
+                    transform={`translate(${pos.x}, ${pos.y})`}
                     style={{
                       transition: `transform ${movementDuration}s ease-in-out`,
                     }}
                   >
-                    {/* F1 Car Body */}
-                    <path
-                      d="M -6 -2.5 L 3 -2.5 L 6.5 0 L 3 2.5 L -6 2.5 Z"
-                      fill={drsActive ? "#ffd43b" : "#ff3b30"}
-                      className="car-body-path"
-                    />
-                    {/* Front wing */}
-                    <rect x="4.5" y="-4" width="2" height="8" fill="#ffffff" rx="0.5" />
-                    {/* Rear wing */}
-                    <rect x="-7.5" y="-4.5" width="2" height="9" fill="#ffffff" rx="0.5" />
-                    {/* Front wheels */}
-                    <rect x="1.5" y="-4.8" width="3" height="1.6" fill="#000000" rx="0.4" />
-                    <rect x="1.5" y="3.2" width="3" height="1.6" fill="#000000" rx="0.4" />
-                    {/* Rear wheels */}
-                    <rect x="-4.5" y="-4.8" width="3.2" height="1.6" fill="#000000" rx="0.4" />
-                    <rect x="-4.5" y="3.2" width="3.2" height="1.6" fill="#000000" rx="0.4" />
-                    {/* Helmet */}
-                    <circle cx="-1" cy="0" r="1.4" fill="#ffd43b" />
+                    <g transform={`rotate(${pos.angle})`}>
+                      {/* F1 Car Body */}
+                      <path
+                        d="M -6 -2.5 L 3 -2.5 L 6.5 0 L 3 2.5 L -6 2.5 Z"
+                        fill={drsActive ? "#ffd43b" : "#ff3b30"}
+                        className="car-body-path"
+                      />
+                      {/* Front wing */}
+                      <rect x="4.5" y="-4" width="2" height="8" fill="#ffffff" rx="0.5" />
+                      {/* Rear wing */}
+                      <rect x="-7.5" y="-4.5" width="2" height="9" fill="#ffffff" rx="0.5" />
+                      {/* Front wheels */}
+                      <rect x="1.5" y="-4.8" width="3" height="1.6" fill="#000000" rx="0.4" />
+                      <rect x="1.5" y="3.2" width="3" height="1.6" fill="#000000" rx="0.4" />
+                      {/* Rear wheels */}
+                      <rect x="-4.5" y="-4.8" width="3.2" height="1.6" fill="#000000" rx="0.4" />
+                      <rect x="-4.5" y="3.2" width="3.2" height="1.6" fill="#000000" rx="0.4" />
+                      {/* Helmet */}
+                      <circle cx="-1" cy="0" r="1.4" fill="#ffd43b" />
+                    </g>
                   </g>
                 );
               })()}
