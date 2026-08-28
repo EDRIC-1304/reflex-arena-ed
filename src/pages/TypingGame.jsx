@@ -20,6 +20,13 @@ import { getSoundEnabledPreference } from "../utils/storage";
 
 const TIME_LIMIT_OPTIONS = [0, 30, 60, 90, 120];
 
+function formatRemainingTime(seconds) {
+  const safeSeconds = Math.max(0, seconds ?? 0);
+  const minutes = Math.floor(safeSeconds / 60);
+  const remainder = safeSeconds % 60;
+  return `${minutes.toString().padStart(2, "0")}:${remainder.toString().padStart(2, "0")}`;
+}
+
 function TypingGame() {
   const navigate = useNavigate();
   const inputRef = useRef(null);
@@ -171,10 +178,10 @@ function TypingGame() {
             <strong>{accuracy}%</strong>
           </div>
 
-          {timeLimit > 0 && (
+          {timeLimit > 0 && (phase === "playing" || phase === "result") && (
             <div className={`typing-hud-stat typing-time-stat ${remainingTime <= 10 ? "warning" : ""}`}>
               <span>TIME LEFT</span>
-              <strong>{remainingTime}s</strong>
+              <strong>{formatRemainingTime(remainingTime)}</strong>
             </div>
           )}
 
