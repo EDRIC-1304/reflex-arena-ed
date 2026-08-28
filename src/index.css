@@ -1995,52 +1995,12 @@ button:focus-visible {
   overflow: visible;
 }
 
-.typing-race-car {
-  position: absolute;
-  width: 30px;
-  height: 15px;
-  transform: translate(-50%, -50%);
-  z-index: 3;
-  filter: drop-shadow(0 0 4px rgba(255, 59, 48, 0.9));
+.typing-svg-car {
+  filter: drop-shadow(0 0 6px rgba(255, 59, 48, 0.95));
 }
 
-.typing-race-car-body,
-.typing-race-car-wing,
-.typing-race-car-wheel {
-  position: absolute;
-  display: block;
-}
-
-.typing-race-car-body {
-  inset: 3px 4px;
-  background: var(--red);
-  clip-path: polygon(0 50%, 20% 14%, 76% 14%, 100% 50%, 76% 86%, 20% 86%);
-}
-
-.typing-race-car-wing {
-  left: 0;
-  top: 5px;
-  width: 8px;
-  height: 5px;
-  background: #f3f5f4;
-}
-
-.typing-race-car-wheel {
-  top: 2px;
-  width: 3px;
-  height: 11px;
-  background: #050606;
-}
-
-.typing-race-car-wheel-front { right: 2px; }
-.typing-race-car-wheel-back { left: 2px; }
-
-.typing-race-car.drs {
-  filter: drop-shadow(0 0 4px rgba(255, 212, 59, 1)) drop-shadow(0 0 12px rgba(255, 59, 48, 0.7));
-}
-
-.typing-race-car.drs .typing-race-car-body {
-  background: #ffd43b;
+.typing-svg-car.drs {
+  filter: drop-shadow(0 0 8px rgba(255, 212, 59, 1)) drop-shadow(0 0 16px rgba(255, 59, 48, 0.8));
 }
 
 .race-progress-readout {
@@ -2048,10 +2008,6 @@ button:focus-visible {
   z-index: 4;
   font-size: 8px;
   letter-spacing: 0.12em;
-  color: #6d7472;
-}
-
-.race-progress-readout {
   left: 18px;
   right: 18px;
   top: 334px;
@@ -2064,12 +2020,56 @@ button:focus-visible {
   color: var(--red);
 }
 
+.typing-dedicated-status-bar {
+  position: absolute;
+  top: 362px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: min(540px, calc(100% - 36px));
+  min-height: 46px;
+  padding: 6px 16px;
+  background: rgba(10, 12, 12, 0.95);
+  border: 1px solid #292d2d;
+  border-radius: 4px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+}
+
+.typing-dedicated-status-bar .typing-race-status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  gap: 20px;
+  margin-left: 0;
+}
+
+.typing-dedicated-status-bar .typing-hud-stat,
+.typing-dedicated-status-bar .typing-lives {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 0;
+  padding: 0 12px;
+}
+
+.typing-dedicated-status-bar .typing-hud-stat {
+  border-right: 1px solid #232727;
+}
+
+.typing-dedicated-status-bar .typing-hud-stat:last-child {
+  border-right: none;
+}
+
 .sector-card {
   position: relative;
   z-index: 8;
   width: min(620px, calc(100% - 40px));
   max-width: calc(100% - 40px);
-  margin: 382px auto 0;
+  margin: 424px auto 0;
   padding: 18px 20px 16px;
   background: rgba(10, 13, 13, 0.94);
   border: 1px solid #4a514f;
@@ -2820,10 +2820,10 @@ button:focus-visible {
   }
 
   .race-circuit {
-    top: 22px;
-    right: 5%;
-    left: 5%;
-    height: 230px;
+    top: 18px;
+    right: 4%;
+    left: 4%;
+    height: 220px;
   }
 
   .sector-card {
@@ -2841,10 +2841,35 @@ button:focus-visible {
   .race-progress-readout {
     left: 10px;
     right: 10px;
-    top: 252px;
+    top: 246px;
     gap: 8px;
     font-size: 6px;
     line-height: 1.5;
+  }
+
+  .typing-dedicated-status-bar {
+    top: 268px;
+    width: min(340px, calc(100% - 20px));
+    min-height: 40px;
+    padding: 4px 10px;
+  }
+
+  .typing-dedicated-status-bar .typing-race-status {
+    gap: 10px;
+  }
+
+  .typing-dedicated-status-bar .typing-hud-stat,
+  .typing-dedicated-status-bar .typing-lives {
+    padding: 0 6px;
+  }
+
+  .typing-dedicated-status-bar .typing-hud-stat span,
+  .typing-dedicated-status-bar .typing-lives > span {
+    font-size: 7px;
+  }
+
+  .typing-dedicated-status-bar .typing-hud-stat strong {
+    font-size: 11px;
   }
 
   .typing-arena {

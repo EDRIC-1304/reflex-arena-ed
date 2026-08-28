@@ -210,8 +210,6 @@ function TypingGame() {
             <span>ACC</span>
             <strong>{accuracy}%</strong>
           </div>
-
-          {(timeLimit > 0 || missCounterEnabled) && (phase === "playing" || phase === "result") && raceStatus()}
         </div>
 
         {(phase === "idle" || phase === "ready" || phase === "countdown") && (
@@ -321,6 +319,8 @@ function TypingGame() {
               <path d={MINI_TRACK_PATH} className="track-outer" />
               <path d={MINI_TRACK_PATH} className="track-surface" />
               <path id="typingRaceTrackPath" d={MINI_TRACK_PATH} className="track-center" fill="none" />
+              
+              {/* Background cars for non-active phase */}
               {phase !== "playing" && phase !== "result" && Array.from({ length: 7 }, (_, index) => (
                 <circle
                   key={index}
@@ -333,27 +333,54 @@ function TypingGame() {
                   </animateMotion>
                 </circle>
               ))}
+
+              {/* Active F1 Race Car rendered inside exact SVG path coordinate space */}
+              {phase !== "result" && (() => {
+                const pos = getTrackPosition(raceProgress);
+                return (
+                  <g
+                    key="active-f1-car"
+                    className={`typing-svg-car ${drsActive ? "drs" : ""}`}
+                    style={{
+                      transform: `translate(${pos.x}px, ${pos.y}px) rotate(${pos.angle}deg)`,
+                      transformOrigin: `${pos.x}px ${pos.y}px`,
+                      transition: `transform ${movementDuration}s ease-in-out`,
+                    }}
+                  >
+                    {/* F1 Car Body */}
+                    <path
+                      d="M -6 -2.5 L 3 -2.5 L 6.5 0 L 3 2.5 L -6 2.5 Z"
+                      fill={drsActive ? "#ffd43b" : "#ff3b30"}
+                      className="car-body-path"
+                    />
+                    {/* Front wing */}
+                    <rect x="4.5" y="-4" width="2" height="8" fill="#ffffff" rx="0.5" />
+                    {/* Rear wing */}
+                    <rect x="-7.5" y="-4.5" width="2" height="9" fill="#ffffff" rx="0.5" />
+                    {/* Front wheels */}
+                    <rect x="1.5" y="-4.8" width="3" height="1.6" fill="#000000" rx="0.4" />
+                    <rect x="1.5" y="3.2" width="3" height="1.6" fill="#000000" rx="0.4" />
+                    {/* Rear wheels */}
+                    <rect x="-4.5" y="-4.8" width="3.2" height="1.6" fill="#000000" rx="0.4" />
+                    <rect x="-4.5" y="3.2" width="3.2" height="1.6" fill="#000000" rx="0.4" />
+                    {/* Helmet */}
+                    <circle cx="-1" cy="0" r="1.4" fill="#ffd43b" />
+                  </g>
+                );
+              })()}
             </svg>
-            {phase !== "result" && (() => {
-              const position = getTrackPosition(raceProgress);
-              return (
-                <motion.div
-                  className={`typing-race-car ${drsActive ? "drs" : ""}`}
-                  animate={{ left: `${position.x}%`, top: `${position.y}%` }}
-                  transition={{ duration: movementDuration, ease: "easeInOut" }}
-                  aria-hidden="true"
-                >
-                  <span className="typing-race-car-wing" />
-                  <span className="typing-race-car-body" />
-                  <span className="typing-race-car-wheel typing-race-car-wheel-front" />
-                  <span className="typing-race-car-wheel typing-race-car-wheel-back" />
-                </motion.div>
-              );
-            })()}
           </div>
 
+          <div className="race-progress-readout">
+            <span>{Math.round(raceProgress).toString().padStart(2, "0")}% TRACK DISTANCE</span>
+            <span>{drsActive ? "DRS OPEN // BOOST ACTIVE" : "RACE PACE // HOLD THE LINE"}</span>
+          </div>
+
+          {/* Dedicated Status Area directly below mini track on ALL devices */}
           {(timeLimit > 0 || missCounterEnabled) && (phase === "playing" || phase === "result") && (
-            <div className="typing-mobile-race-status">{raceStatus("mobile-status-content")}</div>
+            <div className="typing-dedicated-status-bar">
+              {raceStatus("dedicated-status-content")}
+            </div>
           )}
 
           <AnimatePresence>

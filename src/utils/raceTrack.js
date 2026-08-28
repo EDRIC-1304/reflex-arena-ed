@@ -1,28 +1,65 @@
-export const TRACK_POINTS = [
-  { x: 16, y: 65 },
-  { x: 12, y: 43 },
-  { x: 23, y: 20 },
-  { x: 47, y: 14 },
-  { x: 72, y: 17 },
-  { x: 88, y: 31 },
-  { x: 91, y: 55 },
-  { x: 76, y: 72 },
-  { x: 54, y: 78 },
-  { x: 39, y: 67 },
-  { x: 27, y: 73 },
-];
+import { MINI_TRACK_PATH } from "../components/layout/MiniTrack";
+
+let cachedPath = null;
+let cachedTotalLength = 0;
+const SAMPLE_COUNT = 300;
+let pointsCache = null;
+
+function initPathCache() {
+  if (typeof document === "undefined") return;
+  if (!cachedPath) {
+    try {
+      const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      path.setAttribute("d", MINI_TRACK_PATH);
+      cachedPath = path;
+      cachedTotalLength = path.getTotalLength();
+
+      pointsCache = [];
+      for (let i = 0; i <= SAMPLE_COUNT; i++) {
+        const dist = (i / SAMPLE_COUNT) * cachedTotalLength;
+        const pt = path.getPointAtLength(dist);
+
+        const delta = 0.5;
+        const nextDist = (dist + delta) % cachedTotalLength;
+        const ptNext = path.getPointAtLength(nextDist);
+
+        const dx = ptNext.x - pt.x;
+        const dy = ptNext.y - pt.y;
+        const angle = (Math.atan2(dy, dx) * 180) / Math.PI;
+
+        pointsCache.push({ x: pt.x, y: pt.y, angle });
+      }
+    } catch {
+      pointsCache = null;
+    }
+  }
+}
 
 export function getTrackPosition(progress) {
-  const normalized = ((progress % 100) + 100) % 100;
-  const scaled = (normalized / 100) * TRACK_POINTS.length;
-  const index = Math.floor(scaled) % TRACK_POINTS.length;
-  const nextIndex = (index + 1) % TRACK_POINTS.length;
-  const fraction = scaled - Math.floor(scaled);
-  const start = TRACK_POINTS[index];
-  const end = TRACK_POINTS[nextIndex];
+  const normProgress = Math.max(0, Math.min(100, progress || 0));
 
-  return {
-    x: start.x + (end.x - start.x) * fraction,
-    y: start.y + (end.y - start.y) * fraction,
-  };
+  if (typeof document !== "undefined") {
+    initPathCache();
+    if (pointsCache && pointsCache.length > 0) {
+      const samplePos = (normProgress / 100) * SAMPLE_COUNT;
+      const baseIdx = Math.floor(samplePos);
+      const nextIdx = Math.min(SAMPLE_COUNT, baseIdx + 1);
+      const frac = samplePos - baseIdx;
+
+      const p1 = pointsCache[baseIdx];
+      const p2 = pointsCache[nextIdx] || p1;
+
+      const x = p1.x + (p2.x - p1.x) * frac;
+      const y = p1.y + (p2.y - p1.y) * frac;
+
+      let dAngle = p2.angle - p1.angle;
+      if (dAngle > 180) dAngle -= 360;
+      if (dAngle < -180) dAngle += 360;
+      const angle = p1.angle + dAngle * frac;
+
+      return { x, y, angle };
+    }
+  }
+
+  return { x: 30, y: 54, angle: 0 };
 }
