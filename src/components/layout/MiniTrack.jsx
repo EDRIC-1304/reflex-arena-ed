@@ -1,6 +1,6 @@
 const CAR_COUNT = 20;
 
-const TRACK_PATH =
+export const MINI_TRACK_PATH =
   "M 30 54 " +
   "C 18 43, 20 25, 38 18 " +
   "C 55 11, 74 14, 88 8 " +
@@ -48,20 +48,20 @@ function MiniTrack() {
       >
         {/* Visible outer border */}
         <path
-          d={TRACK_PATH}
+          d={MINI_TRACK_PATH}
           className="track-outer"
         />
 
         {/* Dark track surface */}
         <path
-          d={TRACK_PATH}
+          d={MINI_TRACK_PATH}
           className="track-surface"
         />
 
         {/* Actual racing line */}
         <path
           id="miniTrackPath"
-          d={TRACK_PATH}
+          d={MINI_TRACK_PATH}
           className="track-center"
           fill="none"
         />

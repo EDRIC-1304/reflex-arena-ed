@@ -100,6 +100,7 @@ function useTypingGame() {
   const [timeLimit, setTimeLimit] = useState(0);
   const [remainingTime, setRemainingTime] = useState(null);
   const [didNotFinish, setDidNotFinish] = useState(false);
+  const [missCounterEnabled, setMissCounterEnabled] = useState(true);
 
   const typedRef = useRef("");
   const phaseRef = useRef("idle");
@@ -118,6 +119,7 @@ function useTypingGame() {
   const drsTimerRef = useRef(null);
   const raceTimerRef = useRef(null);
   const raceClockRef = useRef(null);
+  const missCounterEnabledRef = useRef(true);
 
   const clearTimers = useCallback(() => {
     countdownTimersRef.current.forEach((timer) => clearTimeout(timer));
@@ -187,6 +189,7 @@ function useTypingGame() {
     setTimeLimit(0);
     setRemainingTime(null);
     setDidNotFinish(false);
+    setMissCounterEnabled(true);
     scoreRef.current = 0;
     missedWordsRef.current = 0;
     comboRef.current = 0;
@@ -195,6 +198,7 @@ function useTypingGame() {
     correctCharactersRef.current = 0;
     totalCharactersRef.current = 0;
     startTimeRef.current = null;
+    missCounterEnabledRef.current = true;
   }, [clearTimers]);
 
   const setNextWord = useCallback(() => {
@@ -206,9 +210,11 @@ function useTypingGame() {
     setLevel(difficulty);
   }, []);
 
-  const startGame = useCallback((selectedTimeLimit = 0) => {
+  const startGame = useCallback((selectedTimeLimit = 0, shouldUseMissCounter = true) => {
     resetGame();
     setTimeLimit(selectedTimeLimit);
+    missCounterEnabledRef.current = shouldUseMissCounter;
+    setMissCounterEnabled(shouldUseMissCounter);
     phaseRef.current = "ready";
     setPhase("ready");
     setCountdownValue(5);
@@ -293,14 +299,16 @@ function useTypingGame() {
       }
     }
     if (cleanValue.length > 0 && !activeWordRef.current.text.startsWith(cleanValue)) {
-      const nextMisses = missedWordsRef.current + 1;
-      missedWordsRef.current = nextMisses;
-      setMissedWords(nextMisses);
       comboRef.current = 0;
       setCombo(0);
       typedRef.current = "";
       setTypedText("");
-      if (nextMisses >= MAX_MISSES) finishRace();
+      if (missCounterEnabledRef.current) {
+        const nextMisses = missedWordsRef.current + 1;
+        missedWordsRef.current = nextMisses;
+        setMissedWords(nextMisses);
+        if (nextMisses >= MAX_MISSES) finishRace(true);
+      }
       updateHud();
       return;
     }
@@ -322,7 +330,7 @@ function useTypingGame() {
     phase, words, typedText, score, missedWords, level, combo, maxCombo,
     completedWords, accuracy, wpm, bestScore, sessionTime, lap, totalLaps,
     raceProgress, countdownValue, drsActive, movementDuration, startGame,
-    resetGame, handleInput, timeLimit, remainingTime, didNotFinish,
+    resetGame, handleInput, timeLimit, remainingTime, didNotFinish, missCounterEnabled,
   };
 }
 

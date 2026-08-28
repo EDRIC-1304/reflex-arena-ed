@@ -13,8 +13,8 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import GameHelp from "../components/ui/GameHelp";
+import { MINI_TRACK_PATH } from "../components/layout/MiniTrack";
 import useTypingGame from "../hooks/useTypingGame";
-import { getTrackPosition } from "../utils/raceTrack";
 import sound from "../utils/sound";
 import { getSoundEnabledPreference } from "../utils/storage";
 
@@ -32,7 +32,9 @@ function TypingGame() {
   const inputRef = useRef(null);
   const [soundEnabled, setSoundEnabled] = useState(getSoundEnabledPreference());
   const [helpOpen, setHelpOpen] = useState(false);
+  const [missCounterHelpOpen, setMissCounterHelpOpen] = useState(false);
   const [selectedTimeLimit, setSelectedTimeLimit] = useState(0);
+  const [selectedMissCounterEnabled, setSelectedMissCounterEnabled] = useState(true);
 
   const {
     phase,
@@ -53,13 +55,13 @@ function TypingGame() {
     raceProgress,
     countdownValue,
     drsActive,
-    movementDuration,
     startGame,
     resetGame,
     handleInput,
     timeLimit,
     remainingTime,
     didNotFinish,
+    missCounterEnabled,
   } = useTypingGame();
 
   useEffect(() => {
@@ -134,6 +136,13 @@ function TypingGame() {
         onClose={() => setHelpOpen(false)}
       />
 
+      <GameHelp
+        open={missCounterHelpOpen}
+        title="MISS COUNTER"
+        description={["Miss counter tracks typing mistakes. If you reach the limit, the race ends early."]}
+        onClose={() => setMissCounterHelpOpen(false)}
+      />
+
       <section className="typing-shell">
         <header className="typing-topbar">
           <div className="typing-heading">
@@ -178,24 +187,30 @@ function TypingGame() {
             <strong>{accuracy}%</strong>
           </div>
 
-          {timeLimit > 0 && (phase === "playing" || phase === "result") && (
-            <div className={`typing-hud-stat typing-time-stat ${remainingTime <= 10 ? "warning" : ""}`}>
-              <span>TIME LEFT</span>
-              <strong>{formatRemainingTime(remainingTime)}</strong>
-            </div>
-          )}
+          {(timeLimit > 0 || missCounterEnabled) && (phase === "playing" || phase === "result") && (
+              <div className="typing-race-status">
+                {timeLimit > 0 && (
+                  <div className={`typing-hud-stat typing-time-stat ${remainingTime <= 10 ? "warning" : ""}`}>
+                    <span>TIME LEFT</span>
+                    <strong>{formatRemainingTime(remainingTime)}</strong>
+                  </div>
+                )}
 
-          <div className="typing-lives">
-            <span>MISSES</span>
-            <div className="life-indicators">
-              {Array.from({ length: 5 }, (_, index) => (
-                <span
-                  key={index}
-                  className={index < missedWords ? "life active" : "life"}
-                />
-              ))}
-            </div>
-          </div>
+                {missCounterEnabled && (
+                  <div className="typing-lives">
+                    <span>MISSES</span>
+                    <div className="life-indicators" aria-label={`${missedWords} of 5 misses`}>
+                      {Array.from({ length: 5 }, (_, index) => (
+                        <span
+                          key={index}
+                          className={index < missedWords ? "life active" : "life"}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+          )}
         </div>
 
         {(phase === "idle" || phase === "ready" || phase === "countdown") && (
@@ -220,22 +235,50 @@ function TypingGame() {
               </p>
 
               {phase === "idle" && (
-                <div className="time-limit-picker" role="group" aria-label="Race time limit">
-                  <span className="time-limit-label">TIME MODE</span>
-                  <div className="time-limit-options">
-                    {TIME_LIMIT_OPTIONS.map((option) => (
-                      <button
-                        key={option}
-                        type="button"
-                        className={selectedTimeLimit === option ? "time-limit-option active" : "time-limit-option"}
-                        onClick={() => setSelectedTimeLimit(option)}
-                        aria-pressed={selectedTimeLimit === option}
-                      >
-                        {option === 0 ? "NO TIME LIMIT" : `${option} SECONDS`}
-                      </button>
-                    ))}
+                <>
+                  <div className="time-limit-picker" role="group" aria-label="Race time limit">
+                    <span className="time-limit-label">TIME MODE</span>
+                    <div className="time-limit-options">
+                      {TIME_LIMIT_OPTIONS.map((option) => (
+                        <button
+                          key={option}
+                          type="button"
+                          className={selectedTimeLimit === option ? "time-limit-option active" : "time-limit-option"}
+                          onClick={() => setSelectedTimeLimit(option)}
+                          aria-pressed={selectedTimeLimit === option}
+                        >
+                          {option === 0 ? "NO TIME LIMIT" : `${option} SECONDS`}
+                        </button>
+                      ))}
+                    </div>
                   </div>
-                </div>
+                  <div className="miss-counter-picker" role="group" aria-label="Miss counter setting">
+                    <div className="miss-counter-heading">
+                      <span className="time-limit-label">MISS COUNTER</span>
+                      <button
+                        type="button"
+                        className="miss-counter-info"
+                        onClick={() => setMissCounterHelpOpen(true)}
+                        aria-label="Explain miss counter"
+                      >
+                        <Info size={12} />
+                      </button>
+                    </div>
+                    <div className="miss-counter-options">
+                      {[true, false].map((enabled) => (
+                        <button
+                          key={String(enabled)}
+                          type="button"
+                          className={selectedMissCounterEnabled === enabled ? "miss-counter-option active" : "miss-counter-option"}
+                          onClick={() => setSelectedMissCounterEnabled(enabled)}
+                          aria-pressed={selectedMissCounterEnabled === enabled}
+                        >
+                          MISS COUNTER {enabled ? "ON" : "OFF"}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </>
               )}
             </div>
 
@@ -245,7 +288,7 @@ function TypingGame() {
                 className="reaction-button"
                 onClick={(event) => {
                   event.stopPropagation();
-                  startGame(selectedTimeLimit);
+                  startGame(selectedTimeLimit, selectedMissCounterEnabled);
                 }}
                 aria-label="Start type to race session"
               >
@@ -269,29 +312,22 @@ function TypingGame() {
           <div className="typing-grid" />
 
           <div className="race-circuit" aria-hidden="true">
-            <div className="circuit-label circuit-label-start">START / FINISH</div>
-            <div className="circuit-label circuit-label-apex">APEX 02</div>
-            <div className="circuit-sector sector-one">01</div>
-            <div className="circuit-sector sector-two">02</div>
-            <div className="circuit-sector sector-three">03</div>
-            <svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
-              <path className="circuit-outer" d="M16 65 C12 43 23 20 47 14 C72 17 91 31 91 55 C76 72 54 78 39 67 C27 73 16 65 16 65" />
-              <path className="circuit-line" d="M16 65 C12 43 23 20 47 14 C72 17 91 31 91 55 C76 72 54 78 39 67 C27 73 16 65 16 65" />
-              <path className="circuit-dash" d="M16 65 C12 43 23 20 47 14 C72 17 91 31 91 55 C76 72 54 78 39 67 C27 73 16 65 16 65" />
+            <div className="track-header typing-track-header">
+              <span className="track-live"><span className="track-live-dot" />RACE LIVE</span>
+              <span>TRACK STATUS</span>
+            </div>
+            <svg className="typing-track-svg" viewBox="0 0 230 95" preserveAspectRatio="xMidYMid meet">
+              <path d={MINI_TRACK_PATH} className="track-outer" />
+              <path d={MINI_TRACK_PATH} className="track-surface" />
+              <path id="typingRaceTrackPath" d={MINI_TRACK_PATH} className="track-center" fill="none" />
+              {phase !== "result" && Array.from({ length: 7 }, (_, index) => (
+                <circle key={index} r={index === 0 ? 3 : 1.9} fill={index === 0 ? "#ff3b30" : index % 3 === 0 ? "#ffd43b" : "#f5f5f5"} className={index === 0 ? `typing-track-leader ${drsActive ? "drs" : ""}` : "typing-track-car"}>
+                  <animateMotion dur={`${9 + (index % 4) * 0.45}s`} begin={`-${index * 0.5}s`} repeatCount="indefinite" rotate="auto">
+                    <mpath href="#typingRaceTrackPath" />
+                  </animateMotion>
+                </circle>
+              ))}
             </svg>
-            <motion.div
-              className={`race-car ${drsActive ? "race-car-drs" : ""}`}
-              animate={(() => {
-                const position = getTrackPosition(raceProgress);
-                return { left: `${position.x}%`, top: `${position.y}%` };
-              })()}
-              transition={{ duration: movementDuration, ease: "easeInOut" }}
-            >
-              <span className="race-car-wing" />
-              <span className="race-car-body" />
-              <span className="race-car-wheel race-car-wheel-front" />
-              <span className="race-car-wheel race-car-wheel-back" />
-            </motion.div>
           </div>
 
           <AnimatePresence>
@@ -340,11 +376,12 @@ function TypingGame() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
             >
+              <div className="typing-result-modal" role="dialog" aria-modal="true" aria-labelledby="typing-result-title">
               <span className={`typing-result-label ${didNotFinish ? "dnf-label" : ""}`}>
                 {didNotFinish ? "DNF - DID NOT FINISH" : "SESSION COMPLETE"}
               </span>
 
-              <h1>{didNotFinish ? "DNF - DID NOT FINISH" : score > 0 ? "RACE COMPLETE" : "RACE OVER"}</h1>
+              <h1 id="typing-result-title">{didNotFinish ? "DNF - DID NOT FINISH" : "RACE COMPLETE"}</h1>
 
               <div className="typing-result-grid">
                 <div>
@@ -367,10 +404,7 @@ function TypingGame() {
                   <strong>{completedWords}</strong>
                 </div>
 
-                <div>
-                  <span>MISSED</span>
-                  <strong>{missedWords}</strong>
-                </div>
+                {missCounterEnabled && <div><span>MISSED</span><strong>{missedWords}/5</strong></div>}
 
                 <div>
                   <span>TIME</span>
@@ -423,6 +457,7 @@ function TypingGame() {
                   <ArrowLeft size={15} />
                   EXIT ARENA
                 </button>
+              </div>
               </div>
             </motion.div>
           )}
