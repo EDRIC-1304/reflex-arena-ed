@@ -15,6 +15,7 @@ import { useNavigate } from "react-router-dom";
 import GameHelp from "../components/ui/GameHelp";
 import { MINI_TRACK_PATH } from "../components/layout/MiniTrack";
 import useTypingGame from "../hooks/useTypingGame";
+import { getTrackPosition } from "../utils/raceTrack";
 import sound from "../utils/sound";
 import { getSoundEnabledPreference } from "../utils/storage";
 
@@ -98,6 +99,28 @@ function TypingGame() {
     "Finish all the laps before you miss too many words.",
     "That’s it.",
   ];
+
+  const raceStatus = (className = "") => (
+    <div className={`typing-race-status ${className}`}>
+      {timeLimit > 0 && (
+        <div className={`typing-hud-stat typing-time-stat ${remainingTime <= 10 ? "warning" : ""}`}>
+          <span>TIME LEFT</span>
+          <strong>{formatRemainingTime(remainingTime)}</strong>
+        </div>
+      )}
+
+      {missCounterEnabled && (
+        <div className="typing-lives">
+          <span>MISSES</span>
+          <div className="life-indicators" aria-label={`${missedWords} of 5 misses`}>
+            {Array.from({ length: 5 }, (_, index) => (
+              <span key={index} className={index < missedWords ? "life active" : "life"} />
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
 
   return (
     <main className="page game-page typing-page">
@@ -187,30 +210,7 @@ function TypingGame() {
             <strong>{accuracy}%</strong>
           </div>
 
-          {(timeLimit > 0 || missCounterEnabled) && (phase === "playing" || phase === "result") && (
-              <div className="typing-race-status">
-                {timeLimit > 0 && (
-                  <div className={`typing-hud-stat typing-time-stat ${remainingTime <= 10 ? "warning" : ""}`}>
-                    <span>TIME LEFT</span>
-                    <strong>{formatRemainingTime(remainingTime)}</strong>
-                  </div>
-                )}
-
-                {missCounterEnabled && (
-                  <div className="typing-lives">
-                    <span>MISSES</span>
-                    <div className="life-indicators" aria-label={`${missedWords} of 5 misses`}>
-                      {Array.from({ length: 5 }, (_, index) => (
-                        <span
-                          key={index}
-                          className={index < missedWords ? "life active" : "life"}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-          )}
+          {(timeLimit > 0 || missCounterEnabled) && (phase === "playing" || phase === "result") && raceStatus()}
         </div>
 
         {(phase === "idle" || phase === "ready" || phase === "countdown") && (
@@ -320,15 +320,40 @@ function TypingGame() {
               <path d={MINI_TRACK_PATH} className="track-outer" />
               <path d={MINI_TRACK_PATH} className="track-surface" />
               <path id="typingRaceTrackPath" d={MINI_TRACK_PATH} className="track-center" fill="none" />
-              {phase !== "result" && Array.from({ length: 7 }, (_, index) => (
-                <circle key={index} r={index === 0 ? 3 : 1.9} fill={index === 0 ? "#ff3b30" : index % 3 === 0 ? "#ffd43b" : "#f5f5f5"} className={index === 0 ? `typing-track-leader ${drsActive ? "drs" : ""}` : "typing-track-car"}>
+              {phase !== "playing" && phase !== "result" && Array.from({ length: 7 }, (_, index) => (
+                <circle
+                  key={index}
+                  r={index === 0 ? 3 : 1.9}
+                  fill={index === 0 ? "#ff3b30" : index % 3 === 0 ? "#ffd43b" : "#f5f5f5"}
+                  className={index === 0 ? "typing-track-leader" : "typing-track-car"}
+                >
                   <animateMotion dur={`${9 + (index % 4) * 0.45}s`} begin={`-${index * 0.5}s`} repeatCount="indefinite" rotate="auto">
                     <mpath href="#typingRaceTrackPath" />
                   </animateMotion>
                 </circle>
               ))}
             </svg>
+            {phase !== "result" && (() => {
+              const position = getTrackPosition(raceProgress);
+              return (
+                <motion.div
+                  className={`typing-race-car ${drsActive ? "drs" : ""}`}
+                  animate={{ left: `${position.x}%`, top: `${position.y}%` }}
+                  transition={{ duration: movementDuration, ease: "easeInOut" }}
+                  aria-hidden="true"
+                >
+                  <span className="typing-race-car-wing" />
+                  <span className="typing-race-car-body" />
+                  <span className="typing-race-car-wheel typing-race-car-wheel-front" />
+                  <span className="typing-race-car-wheel typing-race-car-wheel-back" />
+                </motion.div>
+              );
+            })()}
           </div>
+
+          {(timeLimit > 0 || missCounterEnabled) && (phase === "playing" || phase === "result") && (
+            <div className="typing-mobile-race-status">{raceStatus("mobile-status-content")}</div>
+          )}
 
           <AnimatePresence>
             {words.map((word) => {

@@ -1649,6 +1649,10 @@ button:focus-visible {
   margin-left: 0;
 }
 
+.typing-mobile-race-status {
+  display: none;
+}
+
 .life-indicators {
   display: flex;
 
@@ -1991,17 +1995,52 @@ button:focus-visible {
   overflow: visible;
 }
 
-.typing-track-car,
-.typing-track-leader {
-  filter: drop-shadow(0 0 3px rgba(255, 59, 48, 0.75));
+.typing-race-car {
+  position: absolute;
+  width: 30px;
+  height: 15px;
+  transform: translate(-50%, -50%);
+  z-index: 3;
+  filter: drop-shadow(0 0 4px rgba(255, 59, 48, 0.9));
 }
 
-.typing-track-leader {
-  filter: drop-shadow(0 0 4px rgba(255, 59, 48, 1)) drop-shadow(0 0 10px rgba(255, 59, 48, 0.55));
+.typing-race-car-body,
+.typing-race-car-wing,
+.typing-race-car-wheel {
+  position: absolute;
+  display: block;
 }
 
-.typing-track-leader.drs {
+.typing-race-car-body {
+  inset: 3px 4px;
+  background: var(--red);
+  clip-path: polygon(0 50%, 20% 14%, 76% 14%, 100% 50%, 76% 86%, 20% 86%);
+}
+
+.typing-race-car-wing {
+  left: 0;
+  top: 5px;
+  width: 8px;
+  height: 5px;
+  background: #f3f5f4;
+}
+
+.typing-race-car-wheel {
+  top: 2px;
+  width: 3px;
+  height: 11px;
+  background: #050606;
+}
+
+.typing-race-car-wheel-front { right: 2px; }
+.typing-race-car-wheel-back { left: 2px; }
+
+.typing-race-car.drs {
   filter: drop-shadow(0 0 4px rgba(255, 212, 59, 1)) drop-shadow(0 0 12px rgba(255, 59, 48, 0.7));
+}
+
+.typing-race-car.drs .typing-race-car-body {
+  background: #ffd43b;
 }
 
 .race-progress-readout {
@@ -2183,8 +2222,6 @@ button:focus-visible {
   min-height: 38px;
 
   padding: 6px 8px;
-
-    flex-wrap: wrap;
 
   color: #858c89;
 
@@ -2547,25 +2584,6 @@ button:focus-visible {
 
   .typing-topbar {
     min-height: 42px;
-
-  .typing-race-status {
-    width: 100%;
-    min-height: 52px;
-    margin-left: 0;
-    border-top: 1px solid #202222;
-  }
-
-  .typing-race-status .typing-hud-stat,
-  .typing-race-status .typing-lives {
-    flex: 1 1 0;
-    min-width: 0;
-    justify-content: center;
-    border-right: 1px solid #202222;
-  }
-
-  .typing-race-status .typing-lives {
-    margin-left: 0;
-  }
     padding: 0 5px;
   }
 
@@ -2619,6 +2637,39 @@ button:focus-visible {
     min-height: 34px;
     margin-left: 0;
     padding: 7px;
+  }
+
+  .typing-race-status {
+    display: none;
+  }
+
+  .typing-mobile-race-status {
+    display: block;
+    position: absolute;
+    top: 260px;
+    left: 10px;
+    right: 10px;
+    min-height: 52px;
+    z-index: 9;
+    background: rgba(8, 9, 9, 0.9);
+    border-top: 1px solid #202222;
+  }
+
+  .typing-mobile-race-status .typing-race-status {
+    display: flex;
+    align-items: stretch;
+    width: 100%;
+    min-height: 52px;
+    margin-left: 0;
+  }
+
+  .typing-mobile-race-status .typing-hud-stat,
+  .typing-mobile-race-status .typing-lives {
+    flex: 1 1 0;
+    min-width: 0;
+    justify-content: center;
+    margin-left: 0;
+    border-right: 1px solid #202222;
   }
 
   .life {
